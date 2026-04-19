@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SemantiCore_API.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using SemantiCore_API.Infrastructure.Data;
 namespace SemantiCore_API.Migrations
 {
     [DbContext(typeof(SemantiCoreDbContext))]
-    partial class SemantiCoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260330191514_znms dsknfc")]
+    partial class znmsdsknfc
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -207,10 +210,6 @@ namespace SemantiCore_API.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImageURL")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

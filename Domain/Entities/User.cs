@@ -10,9 +10,12 @@
 
         public string PasswordHash { get; set; } = string.Empty;
 
-        // 1 = Admin, 2 = Creator, 3 = Viewer
         public int RoleId { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        public bool IsActive { get; set; }
+
+        public string ImageURL { get; set;}  = string.Empty;
     }
 }

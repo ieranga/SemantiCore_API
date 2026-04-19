@@ -1,10 +1,12 @@
-﻿using SemantiCore_API.Application.Interfaces;
-using SemantiCore_API.Application.Services;
-using SemantiCore_API.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
-using System.Text;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SemantiCore_API.Application.Interfaces;
+using SemantiCore_API.Application.Services;
+using SemantiCore_API.Infrastructure.Data;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,22 +39,28 @@ builder.Services.AddScoped<ISemanticSearchService, SemanticSearchService>();
 builder.Services.AddScoped<IAiResponseOrganizer, AiResponseOrganizer>();
 builder.Services.AddScoped<IAzureOpenAIChatService, AzureOpenAIChatService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
-builder.Services.AddAuthentication("Bearer")
-    .AddJwtBearer(options =>
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
-        };
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+
+        RoleClaimType = ClaimTypes.Role
+    };
+});
 
 
 var app = builder.Build();
@@ -67,6 +75,8 @@ app.UseSwaggerUI(c =>
 
 // ✅ USE CORS AFTER BUILD (this is correct)
 app.UseCors("AllowAngular");
+
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 
